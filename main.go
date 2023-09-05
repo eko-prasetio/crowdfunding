@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"crowdfunding/user"
 	"log"
 
 	"gorm.io/driver/mysql"
@@ -10,10 +10,20 @@ import (
 
 func main() {
 	dsn := "root:admin@tcp(127.0.0.1:3307)/crowdfunding?charset=utf8mb4&parseTime=True&loc=Local"
-	_, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	fmt.Println("connection to db")
+	userRepository := user.NewRepository(db)
+	userService := user.NewService(userRepository)
+
+	userInput := user.RegisterUserInput{}
+	userInput.Name = "simon"
+	userInput.Email = "simon@gmail.com"
+	userInput.Occupation = "anak band"
+	userInput.Password = "admin"
+
+	userService.RegisterUser(userInput)
+
 }
